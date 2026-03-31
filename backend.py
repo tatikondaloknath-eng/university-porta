@@ -8,11 +8,11 @@ app = Flask(__name__, static_folder='.')
 # --- STEP 1: DATABASE CONFIGURATION ---
 # Replace these values with the credentials from your MySQL provider (e.g., Aiven or Railway)
 db_config = {
-    'host': 'your-mysql-host.com',
-    'user': 'your_username',
-    'password': 'your_password',
+    'host': 'mysql-1153c1de-tatikondaloknath-205b.d.aivencloud.com',
+    'user': 'avnadmin',
+    'password': 'AVNS_xWYifAAJBCzufPNZN8z',
     'database': 'defaultdb',
-    'port': 3306
+    'port': 26298
 }
 
 def get_db_connection():
