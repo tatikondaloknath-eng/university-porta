@@ -172,6 +172,11 @@
                     <input type="text" id="new-test-name" placeholder="e.g. Quiz 1" style="max-width: 150px; display: inline-block;">
                     <button class="btn-small" onclick="addNewTest()">+ Add Test</button>
                 </div>
+                <div style="border-left: 2px solid #ddd; padding-left: 15px; margin-left: 10px;">
+                    <label><strong>Upload CSV Sheet:</strong></label>
+                    <input type="file" id="csv-upload" accept=".csv" style="max-width: 180px; display: inline-block;">
+                    <button class="btn-small" style="background-color: #27ae60;" onclick="handleCSVUpload()">Auto-Fill</button>
+                </div>
             </div>
             <table>
                 <thead>
@@ -594,6 +599,64 @@
             document.querySelectorAll('input').forEach(input => input.value = '');
             document.getElementById('roster-date').value = today;
             updateTestDropdown(); 
+        }
+
+        // ==========================================
+        // NEW CSV UPLOAD FUNCTION
+        // ==========================================
+        function handleCSVUpload() {
+            const fileInput = document.getElementById('csv-upload');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Please select a CSV file to upload.");
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const text = e.target.result;
+                // Split the file into rows
+                const rows = text.split('\n');
+                let fillCount = 0;
+
+                // Loop through every row in the file
+                rows.forEach((row) => {
+                    if (!row.trim()) return; // Skip empty lines
+
+                    // Split the row by commas (CSV)
+                    const columns = row.split(',');
+
+                    // We need exactly 3 columns: Roll Number, Gained, Total
+                    if (columns.length >= 3) {
+                        const rollNo = columns[0].trim().toUpperCase();
+                        const gained = columns[1].trim();
+                        const total = columns[2].trim();
+
+                        // Find this specific student in your database
+                        const studentIndex = studentDatabase.findIndex(s => s.id === rollNo);
+
+                        // If student exists, put the marks in their specific text boxes
+                        if (studentIndex !== -1) {
+                            const gainedInput = document.getElementById(`gained-${studentIndex}`);
+                            const totalInput = document.getElementById(`total-${studentIndex}`);
+
+                            if (gainedInput && totalInput) {
+                                // Only overwrite if the CSV actually has a number
+                                if(gained !== "") gainedInput.value = gained;
+                                if(total !== "") totalInput.value = total;
+                                fillCount++;
+                            }
+                        }
+                    }
+                });
+
+                alert(`✅ Successfully auto-filled marks for ${fillCount} students! Please review the numbers and click "Save Marks" to confirm.`);
+                fileInput.value = ""; // Clear the file input
+            };
+
+            // Start reading the file
+            reader.readAsText(file);
         }
     </script>
 </body>
